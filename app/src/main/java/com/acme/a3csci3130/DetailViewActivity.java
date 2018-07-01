@@ -8,30 +8,45 @@ import android.widget.EditText;
 
 public class DetailViewActivity extends Activity {
 
-    private EditText nameField, emailField;
-    Contact receivedPersonInfo;
+    private EditText nameField, businessTypeField,addressField,provinceField;
+    private MyApplicationData appState;
+    Business receivedPersonInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_view);
-        receivedPersonInfo = (Contact)getIntent().getSerializableExtra("Contact");
-
+        receivedPersonInfo = (Business) getIntent().getSerializableExtra("Business");
+        appState = ((MyApplicationData) getApplicationContext());
         nameField = (EditText) findViewById(R.id.name);
-        emailField = (EditText) findViewById(R.id.email);
+        businessTypeField = (EditText) findViewById(R.id.businessType);
+        addressField = (EditText) findViewById(R.id.address);
+        provinceField = (EditText) findViewById(R.id.province);
 
         if(receivedPersonInfo != null){
             nameField.setText(receivedPersonInfo.name);
-            emailField.setText(receivedPersonInfo.email);
+            businessTypeField.setText(receivedPersonInfo.businessType);
+            addressField.setText(receivedPersonInfo.address);
+            provinceField.setText(receivedPersonInfo.province);
+
         }
     }
-
+    //Overrides the contact with the new information given
     public void updateContact(View v){
-        //TODO: Update contact funcionality
+        String number=receivedPersonInfo.number;
+        String name = nameField.getText().toString();
+        String businessType = businessTypeField.getText().toString();
+        String address=addressField.getText().toString();
+        String province=provinceField.getText().toString();
+        Business person = new Business(number, name, businessType,address,province);
+        appState.firebaseReference.child(number).setValue(person);
+        finish();
     }
-
+    //Makes all the values null, making the object be erased by firebase
     public void eraseContact(View v)
     {
-        //TODO: Erase contact functionality
+        String number=receivedPersonInfo.number;
+        appState.firebaseReference.child(number).setValue(null);
+        finish();
     }
 }
